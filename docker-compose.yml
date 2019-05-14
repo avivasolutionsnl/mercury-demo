@@ -1,0 +1,66 @@
+version: '2.4'
+
+services:
+ mssql:
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-mssql:9.0.3-20190506"
+  isolation: process
+  networks:
+    - mercurydemo  
+
+ solr:
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-solr:9.0.3-20190506"
+  isolation: process
+  networks:
+    - mercurydemo  
+
+ xconnect:
+  image: "avivasolutionsnl.azurecr.io/sitecore-xc-xconnect:9.0.3-20190506"
+  isolation: process
+  networks:
+    - mercurydemo  
+  volumes:
+    - .:C:\license
+  depends_on:
+    - mssql
+    - solr
+
+ sitecore:
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-sitecore:9.0.3-20190506"
+  isolation: process
+  command: -commerceHostname commerce.mercurydemo.localhost 
+  ports:
+    - "80:80"
+    - "443:443"
+  networks:
+    mercurydemo:
+      aliases:
+        - www.mercurydemo.localhost
+  volumes:
+    - .:C:\license
+  depends_on:
+    - xconnect
+    - mssql
+    - solr
+
+ commerce:
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-commerce:9.0.3-20190506"
+  isolation: process
+  command: -commerceHostname commerce.mercurydemo.localhost -sitecoreHostname www.mercurydemo.localhost
+  ports:
+    - "4200:4200"
+    - "5050:5050"
+    - "5000:5000"
+  networks:
+    mercurydemo:
+      aliases:
+        - commerce.mercurydemo.localhost
+  depends_on:
+    - xconnect
+    - mssql
+    - solr
+    - sitecore
+ 
+networks:
+  mercurydemo:
+    external:
+      name: nat
