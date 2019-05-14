@@ -4,6 +4,10 @@ These setup instructions will help you setup and run the Mercury Demo.
 ## Prerequisites
 1. A valid sitecore license xml file
 2. Windows 10 64 bit build 17763 or higher (press windows key, type in `run`, hit enter, type in `winver`, hit enter to check)
+3. Ports 80, 443, 4200 and 5050 should be free. If another application uses these ports you will get a similar error to the one below:
+```
+ERROR: for sitecore  Cannot start service sitecore: failed to create endpoint mercurydemoweb_sitecore_1 on network nat: hnsCall failed in Win32: The process cannot access the file because it is being used by another process. (0x20)
+```
 
 ## Setting up the demo environment
 1. Put the `docker-compose.yml`, `license.xml` and `setup.ps1` in a folder of choice. These files are needed to start the environment so don't delete these.
