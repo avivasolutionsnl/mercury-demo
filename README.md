@@ -30,3 +30,7 @@ ERROR: for sitecore  Cannot start service sitecore: failed to create endpoint me
 ## Updating the demo environment (for when new versions of the demo are released)
 1. Open a powershell and run `az acr login --name avivasolutionsnl`
 2. Navigate to the folder with the `docker-compose.yml` and run `docker-compose pull`. This can take a while.
+
+## Known issues
+### In Experience Profile's Activity tab, a `{{Sitename}}` can be found in the event URL instead of `mercury-food`.
+This will happen for sessions that are started right after starting the docker containers. Please wait 3 minutes before accessing the storefront if a functional Experience Profile is desired for your session.
