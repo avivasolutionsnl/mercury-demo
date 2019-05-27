@@ -12,12 +12,11 @@ ERROR: for sitecore  Cannot start service sitecore: failed to create endpoint me
 ## Setting up the demo environment
 1. Put the `docker-compose.yml`, `license.xml` and `setup.ps1` in a folder of choice. These files are needed to start the environment so don't delete these.
 2. Open up a powershell with admin rights, navigate to this folder (`cd <insertpath to folder here>`) and run `./setup.ps1 -ExecutionPolicy UnRestricted`
-     - Your computer may be asked restart to enable hyper-v. Press yes.
+     - Your computer may be asked restart multiple times.
 3. Switch docker to `Windows Containers` by clicking on `Switch to Windows containers` in the menu that appears when you right click on `Docker Dekstop` in the `hidden icons` panel that can be located near your clock.
 
 ## Using the demo environment
 1. Open up a powershell terminal and navigate to the folder where you put the `docker-compose.yml` 
-     - Make sure you open up a new powershell after running `setup.ps1`. This will refresh the PATH variables.
 2. Run `az login` to generate a login token and then `az acr login --name avivasolutionsnl` to gain access to our docker images. 
      - `az login` will open up a browser window where you can login. If you use the Edge browser it will hang at the login process. This step should work with the Chrome browser.
 3. Run `docker-compose up`. The first time this can take a while as it has to download the environment, once downloaded you can skip step 2 the next time.
