@@ -64,10 +64,9 @@ if ($azureCliIsInstalled -eq 0) {
     }
     Write-Host "Installing the azure cli...."
     Start-Process msiexec.exe -Wait -ArgumentList '/I $azureclimsi /quiet'
-    RefreshEnv.cmd
     Write-Host "Installation of azure cli finished!" -ForegroundColor Green
 }
 else {
     Write-Host "Azure cli already installed!" -ForegroundColor Green
 }
-Write-Host "Setup finished!" -ForegroundColor Green
+Write-Host "Setup finished! Please restart for changes to take effect" -ForegroundColor Green
