@@ -2,19 +2,19 @@ version: '2.4'
 
 services:
  mssql:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-mssql:9.0.3-20190514"
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-mssql:9.0.3-20190527"
   isolation: process
   networks:
     - mercurydemo  
 
  solr:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-solr:9.0.3-20190514"
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-solr:9.0.3-20190527"
   isolation: process
   networks:
     - mercurydemo  
 
  xconnect:
-  image: "avivasolutionsnl.azurecr.io/sitecore-xc-xconnect:9.0.3-20190506"
+  image: "avivasolutionsnl.azurecr.io/sitecore-xc-xconnect:9.0.3-20190521"
   isolation: process
   networks:
     - mercurydemo  
@@ -25,7 +25,7 @@ services:
     - solr
 
  sitecore:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-sitecore:9.0.3-20190514"
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-sitecore:9.0.3-20190527"
   isolation: process
   command: -commerceHostname commerce.mercurydemo.localhost 
   ports:
@@ -43,7 +43,7 @@ services:
     - solr
 
  commerce:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-commerce:9.0.3-20190514"
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-commerce:9.0.3-20190527"
   isolation: process
   command: -commerceHostname commerce.mercurydemo.localhost -sitecoreHostname www.mercurydemo.localhost
   ports:
