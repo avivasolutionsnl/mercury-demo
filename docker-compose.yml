@@ -14,7 +14,7 @@ services:
     - mercurydemo  
 
  xconnect:
-  image: "avivasolutionsnl.azurecr.io/sitecore-xc-xconnect:9.0.3-20190521"
+  image: "avivasolutionsnl.azurecr.io/sitecore-xc-xconnect:9.0.3-20190527"
   isolation: process
   networks:
     - mercurydemo  
