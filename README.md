@@ -3,7 +3,7 @@ These setup instructions will help you setup and run the Mercury Demo.
 
 ## Prerequisites
 1. A valid sitecore license xml file.
-2. Windows 10 64 bit build 17763 or higher (press windows key, type in `run`, hit enter, type in `winver`, hit enter to check).
+2. Windows 10 64 bit build 17763 (press windows key, type in `run`, hit enter, type in `winver`, hit enter to check), for higher versions see [here](#Running a not compatible Windows version).
 3. CPU with support for virtualisation (VT-x or AMD-V).
 4. ~30GB of free space, you probably want a decent internet speed as well to download this.
 5. 16GB of RAM, less may work but is untested.
@@ -39,4 +39,4 @@ This will happen for sessions that are started right after starting the docker c
 
 ### Running a not compatible Windows version
 We currently only support Windows Host OS versions that are compatible with a `Windows Server 2019 Builds 17763.*` Container OS version, see https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility for a full compatiblity list.
-This basically means that you need `Windows Server 2019 Builds 17763.*`, `Windows 10, version 1809 Builds 17763.*`. On higher version Hyper-V isolation is required, to use this remove all `isolation=process` lines from https://github.com/avivasolutionsnl/mercury-demo/blob/master/docker-compose.yml. NB. Hyper-V isolation requires more RAM memory.
+This basically means that you need `Windows Server 2019 Builds 17763.*`, `Windows 10, version 1809 Builds 17763.*`. On higher versions Hyper-V isolation is required, to use this remove all `isolation=process` lines from https://github.com/avivasolutionsnl/mercury-demo/blob/master/docker-compose.yml. NB. Hyper-V isolation requires more RAM memory.
