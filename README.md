@@ -40,4 +40,5 @@ This will happen for sessions that are started right after starting the docker c
 ### Running a not compatible Windows version
 We currently only support Windows Host OS versions that are compatible with a `Windows Server 2019 Builds 17763.*` Container OS version, see https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility for a full compatiblity list.
 This basically means that you need `Windows Server 2019 Builds 17763.*`, `Windows 10, version 1809 Builds 17763.*`. On higher versions Hyper-V isolation is required, to use this remove all `isolation=process` lines from https://github.com/avivasolutionsnl/mercury-demo/blob/master/docker-compose.yml. 
+
 NB. Hyper-V isolation requires more RAM memory.
