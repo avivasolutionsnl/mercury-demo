@@ -3,7 +3,7 @@ These setup instructions will help you setup and run the Mercury Demo.
 
 ## Prerequisites
 1. A valid sitecore license xml file.
-2. Windows 10 64 bit build 17763 (press windows key, type in `run`, hit enter, type in `winver`, hit enter to check), for higher versions see [here](#Running a not compatible Windows version).
+2. Windows 10 64 bit build 17763 (press windows key, type in `run`, hit enter, type in `winver`, hit enter to check), for higher versions see [here](#running-a-not-compatible-windows-version).
 3. CPU with support for virtualisation (VT-x or AMD-V).
 4. ~30GB of free space, you probably want a decent internet speed as well to download this.
 5. 16GB of RAM, less may work but is untested.
