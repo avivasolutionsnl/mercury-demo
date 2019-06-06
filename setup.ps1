@@ -7,6 +7,23 @@ Param(
     [string]
     $composeFile = "$PSScriptRoot/docker-compose.yml"
 )
+Function Test-CommandExists {
+    Param ($command)
+
+    $oldPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Stop'
+
+    try {
+        if (Get-Command $command) {
+            return $true
+        }
+    } catch {
+        Write-Host "$command does not exist"; 
+        return $false
+    } finally {
+        $ErrorActionPreference = $oldPreference
+    }
+}
 
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'
@@ -51,8 +68,7 @@ if ($dockerIsInstalled -eq 0) {
     Write-Host "Docker already installed!" -ForegroundColor Green
 }
 
-$azureCliIsInstalled = (Get-Module -ListAvailable -Name Azure -Refresh).Count
-if ($azureCliIsInstalled -eq 0) {
+If (!(Test-CommandExists "az")) {
     $azureclimsi = "$currentFolder/azurecli.msi"
     If (-Not (Test-Path($azureclimsi))) {
         Write-Host "Downloading the azure cli...."
