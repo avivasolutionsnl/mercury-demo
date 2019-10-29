@@ -2,20 +2,19 @@ version: '2.4'
 
 services:
  mssql:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-mssql:9.0.3-20190527"
-  isolation: process
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-mssql:9.2.0-20191029"
+  mem_limit: 4096m
+  cpu_count: 4
   networks:
     - mercurydemo  
 
  solr:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-solr:9.0.3-20190527"
-  isolation: process
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-solr:9.2.0-20191029"
   networks:
     - mercurydemo  
 
  xconnect:
-  image: "avivasolutionsnl.azurecr.io/sitecore-xc-xconnect:9.0.3-20190527"
-  isolation: process
+  image: "avivasolutionsnl.azurecr.io/sitecore-xc-xconnect:9.2.0-20191008"
   networks:
     - mercurydemo  
   volumes:
@@ -25,12 +24,12 @@ services:
     - solr
 
  sitecore:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-sitecore:9.0.3-20190527"
-  isolation: process
-  command: -commerceHostname commerce.mercurydemo.localhost 
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-sitecore:9.2.0-20191029"
+  command: -commerceHostname commerce.mercurydemo.localhost -identityHostname identity.mercurydemo.localhost
+  mem_limit: 8192m
+  cpu_count: 6
   ports:
     - "80:80"
-    - "443:443"
   networks:
     mercurydemo:
       aliases:
@@ -43,9 +42,10 @@ services:
     - solr
 
  commerce:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-commerce:9.0.3-20190527"
-  isolation: process
-  command: -commerceHostname commerce.mercurydemo.localhost -sitecoreHostname www.mercurydemo.localhost
+  image: "avivasolutionsnl.azurecr.io/mercury-demo-commerce:9.2.0-20191029"
+  command: -commerceHostname commerce.mercurydemo.localhost -sitecoreHostname www.mercurydemo.localhost -identityHostname identity.mercurydemo.localhost
+  mem_limit: 4096m
+  cpu_count: 6
   ports:
     - "4200:4200"
     - "5050:5050"
@@ -59,7 +59,26 @@ services:
     - mssql
     - solr
     - sitecore
- 
+
+ identity:
+  image: "avivasolutionsnl.azurecr.io/sitecore-xc-identity:9.2.0-20191008"
+  command: -commerceHostname commerce.mercurydemo.localhost -sitecoreHostname www.mercurydemo.localhost -identityHostname identity.mercurydemo.localhost
+  ports:
+    - "443:443"
+  networks:
+    mercurydemo:
+      aliases:
+        - identity.mercurydemo.localhost
+  volumes:
+    - .:C:\license
+  depends_on:
+    - mssql
+
+ redis:
+  image: "avivasolutionsnl.azurecr.io/sitecore-base-redis:9.2.0-20191008"
+  networks:
+    - mercurydemo
+
 networks:
   mercurydemo:
     external:
