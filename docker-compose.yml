@@ -1,65 +1,218 @@
-version: '2.4'
+version: "2.4"
 
 services:
- mssql:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-mssql:9.0.3-20190527"
-  isolation: process
-  networks:
-    - mercurydemo  
+  sql:
+    image: ${REGISTRY}${DEMO_IMAGE_PREFIX}-sql:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}-${BASE_IMAGE_VERSION}
+    isolation: ${ISOLATION}
+    mem_limit: 4GB
+    ports:
+      - "44010:1433"
+    networks:
+      - mercurydemo
+    environment:
+      SA_PASSWORD: ${SQL_SA_PASSWORD}
+      ACCEPT_EULA: "Y"
 
- solr:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-solr:9.0.3-20190527"
-  isolation: process
-  networks:
-    - mercurydemo  
+  solr:
+    image: ${REGISTRY}${DEMO_IMAGE_PREFIX}-solr:${SITECORE_VERSION}-nanoserver-${NANOSERVER_VERSION}-${BASE_IMAGE_VERSION}
+    mem_limit: 1GB
+    ports:
+      - "44011:8983"
+    networks:
+      - mercurydemo
 
- xconnect:
-  image: "avivasolutionsnl.azurecr.io/sitecore-xc-xconnect:9.0.3-20190527"
-  isolation: process
-  networks:
-    - mercurydemo  
-  volumes:
-    - .:C:\license
-  depends_on:
-    - mssql
-    - solr
+  xconnect:
+    image: ${REGISTRY}sitecore-xc-xconnect:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
+    mem_limit: 1GB
+    isolation: ${ISOLATION}
+    networks:
+      - mercurydemo
+    environment:
+      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_SITECORE:XCONNECT:COLLECTIONSEARCH:SERVICES:SOLR.SOLRREADERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
+      SITECORE_SITECORE:XCONNECT:SEARCHINDEXER:SERVICES:SOLR.SOLRWRITERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
+      SITECORE_CONNECTIONSTRINGS_MESSAGING: Data Source=sql;Database=Sitecore.Messaging;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_PROCESSING.ENGINE.STORAGE: Data Source=sql;Database=Sitecore.ProcessingEngineStorage;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_REPORTING: Data Source=sql;Database=Sitecore.Reporting;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_XDB.MARKETINGAUTOMATION: Data Source=sql;Database=Sitecore.MarketingAutomation;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_XDB.PROCESSING.POOLS: Data Source=sql;Database=Sitecore.Processing.Pools;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_XDB.REFERENCEDATA: Data Source=sql;Database=Sitecore.ReferenceData;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_COLLECTION: Data Source=sql;Database=Sitecore.Xdb.Collection.ShardMapManager;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_SOLRCORE: http://solr:8983/solr/sitecore_xdb
+    depends_on:
+      - sql
+      - solr
 
- sitecore:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-sitecore:9.0.3-20190527"
-  isolation: process
-  command: -commerceHostname commerce.mercurydemo.localhost 
-  ports:
-    - "80:80"
-    - "443:443"
-  networks:
-    mercurydemo:
-      aliases:
-        - www.mercurydemo.localhost
-  volumes:
-    - .:C:\license
-  depends_on:
-    - xconnect
-    - mssql
-    - solr
+  xconnect-automationengine:
+    image: ${REGISTRY}sitecore-xc-xconnect-automationengine:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
+    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\worker\\Development.ps1"
+    mem_limit: 500MB
+    networks:
+      - mercurydemo
+    environment:
+      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_CONNECTIONSTRINGS_XCONNECT.COLLECTION: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_XDB.MARKETINGAUTOMATION: Data Source=sql;Database=Sitecore.MarketingAutomation;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_XDB.REFERENCEDATA: Data Source=sql;Database=Sitecore.ReferenceData;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_MESSAGING: Data Source=sql;Database=Sitecore.Messaging;User ID=sa;Password=${SQL_SA_PASSWORD}
+    depends_on:
+      - sql
+      - xconnect
+    isolation: ${ISOLATION}
 
- commerce:
-  image: "avivasolutionsnl.azurecr.io/mercury-demo-commerce:9.0.3-20190527"
-  isolation: process
-  command: -commerceHostname commerce.mercurydemo.localhost -sitecoreHostname www.mercurydemo.localhost
-  ports:
-    - "4200:4200"
-    - "5050:5050"
-    - "5000:5000"
-  networks:
-    mercurydemo:
-      aliases:
-        - commerce.mercurydemo.localhost
-  depends_on:
-    - xconnect
-    - mssql
-    - solr
-    - sitecore
- 
+  xconnect-indexworker:
+    image: ${REGISTRY}sitecore-xc-xconnect-indexworker:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
+    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\worker\\Development.ps1"
+    mem_limit: 500MB
+    networks:
+      - mercurydemo
+    environment:
+      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_CONNECTIONSTRINGS_COLLECTION: Data Source=sql;Initial Catalog=Sitecore.Xdb.Collection.ShardMapManager;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_SOLRCORE: http://solr:8983/solr/sitecore_xdb
+      SITECORE_SITECORE:XCONNECT:SEARCHINDEXER:SERVICES:SOLR.SOLRREADERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
+      SITECORE_SITECORE:XCONNECT:SEARCHINDEXER:SERVICES:SOLR.SOLRWRITERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
+    depends_on:
+      - sql
+      - solr
+    isolation: ${ISOLATION}
+
+  xconnect-processingengine:
+    image: ${REGISTRY}sitecore-xp-xconnect-processingengine:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
+    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\worker\\Development.ps1"
+    mem_limit: 500MB
+    restart: unless-stopped
+    networks:
+      - mercurydemo
+    environment:
+      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_CONNECTIONSTRINGS_PROCESSING.ENGINE.STORAGE: Data Source=sql;Database=Sitecore.Processing.Engine.Storage;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_PROCESSING.ENGINE.TASKS: Data Source=sql;Database=Sitecore.Processing.Engine.Tasks;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_PROCESSING.WEBAPI.BLOB: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_PROCESSING.WEBAPI.TABLE: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_XCONNECT.COLLECTION: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_XCONNECT.CONFIGURATION: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_XCONNECT.SEARCH: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_MESSAGING: Data Source=sql;Database=Sitecore.Messaging;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_REPORTING: Data Source=sql;Database=Sitecore.Reporting;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_SETTINGS:SERILOG:MINIMUMLEVEL:DEFAULT: Information
+    depends_on:
+      - sql
+      - xconnect
+    isolation: ${ISOLATION}
+
+  cm:
+    image: ${REGISTRY}${DEMO_IMAGE_PREFIX}-cm:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}-${BASE_IMAGE_VERSION}
+    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\iis\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; }"
+    mem_limit: 4GB
+    ports:
+      - "80:80"
+    networks:
+      mercurydemo:
+        aliases:
+          - ${SITECORE_HOST_NAME}
+    environment:
+      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_APPSETTINGS_ROLE:DEFINE: Standalone
+      SITECORE_CONNECTIONSTRINGS_CORE: Data Source=sql;Initial Catalog=Sitecore.Core;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_SECURITY: Data Source=sql;Initial Catalog=Sitecore.Core;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_MASTER: Data Source=sql;Initial Catalog=Sitecore.Master;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_WEB: Data Source=sql;Initial Catalog=Sitecore.Web;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_EXPERIENCEFORMS: Data Source=sql;Initial Catalog=Sitecore.ExperienceForms;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_SOLR.SEARCH: http://solr:8983/solr
+      SITECORE_CONNECTIONSTRINGS_MESSAGING: Data Source=sql;Database=Sitecore.Messaging;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_XDB.MARKETINGAUTOMATION: Data Source=sql;Database=Sitecore.MarketingAutomation;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_XDB.PROCESSING.POOLS: Data Source=sql;Database=Sitecore.Processing.Pools;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_XDB.REFERENCEDATA: Data Source=sql;Database=Sitecore.ReferenceData;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_XDB.PROCESSING.TASKS: Data Source=sql;Database=Sitecore.Processing.Tasks;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_EXM.MASTER: Data Source=sql;Database=Sitecore.EXM.Master;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_REPORTING: Data Source=sql;Database=Sitecore.Reporting;User ID=sa;Password=${SQL_SA_PASSWORD}
+      SITECORE_CONNECTIONSTRINGS_SITECORE.REPORTING.CLIENT: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_XCONNECT.COLLECTION: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_XDB.MARKETINGAUTOMATION.OPERATIONS.CLIENT: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_XDB.MARKETINGAUTOMATION.REPORTING.CLIENT: http://xconnect
+      SITECORE_CONNECTIONSTRINGS_XDB.REFERENCEDATA.CLIENT: http://xconnect
+      SITECORE_APPSETTINGS_TELERIK.ASYNCUPLOAD.CONFIGURATIONENCRYPTIONKEY: ${TELERIK_ENCRYPTION_KEY}
+      SITECORE_APPSETTINGS_TELERIK.UPLOAD.CONFIGURATIONHASHKEY: ${TELERIK_ENCRYPTION_KEY}
+      SITECORE_APPSETTINGS_TELERIK.WEB.UI.DIALOGPARAMETERSENCRYPTIONKEY: ${TELERIK_ENCRYPTION_KEY}
+    depends_on:
+      - sql
+      - solr
+      - xconnect
+      - commerce-authoring
+    isolation: ${ISOLATION}
+
+  commerce-authoring:
+    image: ${REGISTRY}${DEMO_IMAGE_PREFIX}-commerce-authoring:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}-${BASE_IMAGE_VERSION}
+    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\sitecore-xc-engine\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; }"
+    environment:
+      - "ENTRYPOINT_STDOUT_IIS_ACCESS_LOG_ENABLED=true"
+      - "ENTRYPOINT_STDOUT_IIS_ERROR_LOG_ENABLED=true"
+      - "ENTRYPOINT_STDOUT_ENGINE_LOG_ENABLED=true"
+      - ASPNETCORE_ENVIRONMENT=Development
+    mem_limit: 1GB
+    ports:
+      - "5000:80"
+    networks:
+      mercurydemo:
+        aliases:
+          - ${AUTHORING_HOST_NAME}
+    depends_on:
+      - sql
+      - solr
+    isolation: ${ISOLATION}
+
+  commerce-minions:
+    image: ${REGISTRY}${DEMO_IMAGE_PREFIX}-commerce-minions:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}-${BASE_IMAGE_VERSION}
+    entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\sitecore-xc-engine\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; }"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    mem_limit: 1GB
+    ports:
+      - "5010:80"
+    networks:
+      mercurydemo:
+        aliases:
+          - ${MINIONS_HOST_NAME}
+    depends_on:
+      - sql
+      - solr
+    isolation: ${ISOLATION}
+
+  bizfx:
+    image: ${REGISTRY}sitecore-xc-bizfx:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
+    mem_limit: 500MB
+    ports:
+      - "4200:80"
+    networks:
+      mercurydemo:
+        aliases:
+          - ${BIZFX_HOST_NAME}
+    depends_on:
+      - commerce-authoring
+      - identity
+    isolation: ${ISOLATION}
+
+  redis:
+    image: ${REGISTRY}sitecore-redis:3.0.504-windowsservercore-${WINDOWSSERVERCORE_VERSION}
+    mem_limit: 1GB
+    isolation: ${ISOLATION}
+    networks:
+      - mercurydemo
+
+  identity:
+    image: ${REGISTRY}sitecore-xc-identity:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
+    mem_limit: 750MB
+    volumes:
+      - ${LICENSE_PATH}:C:\license
+    ports:
+      - "44008:80"
+    networks:
+      - mercurydemo
+    depends_on:
+      - sql
+    isolation: ${ISOLATION}
+
 networks:
   mercurydemo:
     external:

@@ -3,7 +3,7 @@ Param(
     [string]
     $currentFolder = "$PSScriptRoot",
     [string]
-    $licenseFile = "$PSScriptRoot/license.xml",
+    $licenseFile = "c:/license/license.xml",
     [string]
     $composeFile = "$PSScriptRoot/docker-compose.yml"
 )

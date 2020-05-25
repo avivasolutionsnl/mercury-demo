@@ -3,11 +3,11 @@ These setup instructions will help you setup and run the Mercury Demo.
 
 ## Prerequisites
 1. A valid sitecore license xml file.
-2. Windows 10 64 bit build 17763 (press windows key, type in `run`, hit enter, type in `winver`, hit enter to check), for higher versions see [here](#running-a-not-compatible-windows-version).
+2. Windows 10 64 bit build 18362.* (press windows key, type in `run`, hit enter, type in `winver`, hit enter to check), for higher versions see [here](#running-a-not-compatible-windows-version).
 3. CPU with support for virtualisation (VT-x or AMD-V).
 4. ~30GB of free space, you probably want a decent internet speed as well to download this.
 5. 16GB of RAM, less may work but is untested.
-6. Ports 80, 443, 4200 and 5050 should be free. If another application uses these ports you will get a similar error to the one below:
+6. Ports 80, 4200, 5000 and 5010 should be free. If another application uses these ports you will get a similar error to the one below:
 ```
 ERROR: for sitecore  Cannot start service sitecore: failed to create endpoint mercurydemoweb_sitecore_1 on network nat: hnsCall failed in Win32: The process cannot access the file because it is being used by another process. (0x20)
 ```
@@ -26,7 +26,7 @@ ERROR: for sitecore  Cannot start service sitecore: failed to create endpoint me
 4. Now you can go to the following urls:
      - http://www.mercurydemo.localhost to view the site, 
      - http://www.mercurydemo.localhost/sitecore to view the cms 
-     - https://commerce.mercurydemo.localhost:4200 to view commerce
+     - http://bizfx.mercurydemo.localhost:4200 to view commerce
 5. You can stop the environment with `docker-compose down`.
 
 ## Updating the demo environment (for when new versions of the demo are released)
@@ -38,7 +38,7 @@ ERROR: for sitecore  Cannot start service sitecore: failed to create endpoint me
 This will happen for sessions that are started right after starting the docker containers. Please wait 3 minutes before accessing the storefront if a functional Experience Profile is desired for your session.
 
 ### Running a not compatible Windows version
-We currently only support Windows Host OS versions that are compatible with a `Windows Server 2019 Builds 17763.*` Container OS version, see https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility for a full compatiblity list.  
-This basically means that you need `Windows Server 2019 Builds 17763.*`, `Windows 10, version 1809 Builds 17763.*`. On higher versions Hyper-V isolation is required, to use this remove all `isolation: process` lines from https://github.com/avivasolutionsnl/mercury-demo/blob/master/docker-compose.yml. 
+We currently only support Windows Host OS versions that are compatible with a `Windows Server 2019 Builds 18362.*` Container OS version, see https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility for a full compatiblity list.  
+This basically means that you need `Windows Server 2019 Builds 18362.*`, `Windows 10, version 1903 Builds 18362.*`. On higher versions Hyper-V isolation is required, to use this configure `ISOLATION=hyperv` in the `.env` environment file. 
 
 NB. Hyper-V isolation requires more RAM memory.
