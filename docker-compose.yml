@@ -15,6 +15,7 @@ services:
 
   solr:
     image: ${REGISTRY}${DEMO_IMAGE_PREFIX}-solr:${SITECORE_VERSION}-nanoserver-${NANOSERVER_VERSION}-${BASE_IMAGE_VERSION}
+    isolation: ${ISOLATION}
     mem_limit: 1GB
     ports:
       - "44011:8983"
@@ -206,7 +207,7 @@ services:
     volumes:
       - ${LICENSE_PATH}:C:\license
     ports:
-      - "44008:80"
+      - "443:80"
     networks:
       - mercurydemo
     depends_on:
