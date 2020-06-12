@@ -31,7 +31,7 @@ services:
     networks:
       - mercurydemo
     environment:
-      SITECORE_LICENSE_LOCATION: C:\license\license.xml
+      SITECORE_LICENSE_LOCATION: ${LICENSE_PATH}
       SITECORE_SITECORE:XCONNECT:COLLECTIONSEARCH:SERVICES:SOLR.SOLRREADERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
       SITECORE_SITECORE:XCONNECT:SEARCHINDEXER:SERVICES:SOLR.SOLRWRITERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
       SITECORE_CONNECTIONSTRINGS_MESSAGING: Data Source=sql;Database=Sitecore.Messaging;User ID=sa;Password=${SQL_SA_PASSWORD}
@@ -55,7 +55,7 @@ services:
     networks:
       - mercurydemo
     environment:
-      SITECORE_LICENSE_LOCATION: C:\license\license.xml
+      SITECORE_LICENSE_LOCATION: ${LICENSE_PATH}
       SITECORE_CONNECTIONSTRINGS_XCONNECT.COLLECTION: http://xconnect
       SITECORE_CONNECTIONSTRINGS_XDB.MARKETINGAUTOMATION: Data Source=sql;Database=Sitecore.MarketingAutomation;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_XDB.REFERENCEDATA: Data Source=sql;Database=Sitecore.ReferenceData;User ID=sa;Password=${SQL_SA_PASSWORD}
@@ -74,7 +74,7 @@ services:
     networks:
       - mercurydemo
     environment:
-      SITECORE_LICENSE_LOCATION: C:\license\license.xml
+      SITECORE_LICENSE_LOCATION: ${LICENSE_PATH}
       SITECORE_CONNECTIONSTRINGS_COLLECTION: Data Source=sql;Initial Catalog=Sitecore.Xdb.Collection.ShardMapManager;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_SOLRCORE: http://solr:8983/solr/sitecore_xdb
       SITECORE_SITECORE:XCONNECT:SEARCHINDEXER:SERVICES:SOLR.SOLRREADERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
@@ -94,7 +94,7 @@ services:
     networks:
       - mercurydemo
     environment:
-      SITECORE_LICENSE_LOCATION: C:\license\license.xml
+      SITECORE_LICENSE_LOCATION: ${LICENSE_PATH}
       SITECORE_CONNECTIONSTRINGS_PROCESSING.ENGINE.STORAGE: Data Source=sql;Database=Sitecore.Processing.Engine.Storage;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_PROCESSING.ENGINE.TASKS: Data Source=sql;Database=Sitecore.Processing.Engine.Tasks;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_PROCESSING.WEBAPI.BLOB: http://xconnect
