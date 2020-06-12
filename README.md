@@ -13,10 +13,11 @@ ERROR: for sitecore  Cannot start service sitecore: failed to create endpoint me
 ```
 
 ## Setting up the demo environment
-1. Put the `docker-compose.yml`, `license.xml` and `setup.ps1` in a folder of choice. These files are needed to start the environment so don't delete these.
-2. Open up a powershell with admin rights, navigate to this folder (`cd <insertpath to folder here>`) and run `./setup.ps1 -ExecutionPolicy UnRestricted`
+1. Put the `docker-compose.yml` and `setup.ps1` in a folder of choice. These files are needed to start the environment so don't delete these.
+2. Place license file in `C:\license` folder
+3. Open up a powershell with admin rights, navigate to this folder (`cd <insertpath to folder here>`) and run `./setup.ps1 -ExecutionPolicy UnRestricted`
      - Your computer may be asked restart multiple times.
-3. Switch docker to `Windows Containers` by clicking on `Switch to Windows containers` in the menu that appears when you right click on `Docker Desktop` in the `hidden icons` panel that can be located near your clock.
+4. Switch docker to `Windows Containers` by clicking on `Switch to Windows containers` in the menu that appears when you right click on `Docker Desktop` in the `hidden icons` panel that can be located near your clock.
 
 ## Using the demo environment
 1. Open up a powershell terminal and navigate to the folder where you put the `docker-compose.yml`.

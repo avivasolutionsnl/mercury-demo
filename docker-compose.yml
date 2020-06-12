@@ -26,10 +26,12 @@ services:
     image: ${REGISTRY}sitecore-xc-xconnect:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
     mem_limit: 1GB
     isolation: ${ISOLATION}
+    volumes:
+      - ${LICENSE_PATH}:C:\license
     networks:
       - mercurydemo
     environment:
-      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_LICENSE_LOCATION: C:\license\license.xml
       SITECORE_SITECORE:XCONNECT:COLLECTIONSEARCH:SERVICES:SOLR.SOLRREADERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
       SITECORE_SITECORE:XCONNECT:SEARCHINDEXER:SERVICES:SOLR.SOLRWRITERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
       SITECORE_CONNECTIONSTRINGS_MESSAGING: Data Source=sql;Database=Sitecore.Messaging;User ID=sa;Password=${SQL_SA_PASSWORD}
@@ -48,10 +50,12 @@ services:
     image: ${REGISTRY}sitecore-xc-xconnect-automationengine:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
     entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\worker\\Development.ps1"
     mem_limit: 500MB
+    volumes:
+      - ${LICENSE_PATH}:C:\license
     networks:
       - mercurydemo
     environment:
-      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_LICENSE_LOCATION: C:\license\license.xml
       SITECORE_CONNECTIONSTRINGS_XCONNECT.COLLECTION: http://xconnect
       SITECORE_CONNECTIONSTRINGS_XDB.MARKETINGAUTOMATION: Data Source=sql;Database=Sitecore.MarketingAutomation;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_XDB.REFERENCEDATA: Data Source=sql;Database=Sitecore.ReferenceData;User ID=sa;Password=${SQL_SA_PASSWORD}
@@ -65,10 +69,12 @@ services:
     image: ${REGISTRY}sitecore-xc-xconnect-indexworker:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}
     entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\worker\\Development.ps1"
     mem_limit: 500MB
+    volumes:
+      - ${LICENSE_PATH}:C:\license
     networks:
       - mercurydemo
     environment:
-      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_LICENSE_LOCATION: C:\license\license.xml
       SITECORE_CONNECTIONSTRINGS_COLLECTION: Data Source=sql;Initial Catalog=Sitecore.Xdb.Collection.ShardMapManager;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_SOLRCORE: http://solr:8983/solr/sitecore_xdb
       SITECORE_SITECORE:XCONNECT:SEARCHINDEXER:SERVICES:SOLR.SOLRREADERSETTINGS:OPTIONS:REQUIREHTTPS: 'false'
@@ -83,10 +89,12 @@ services:
     entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\worker\\Development.ps1"
     mem_limit: 500MB
     restart: unless-stopped
+    volumes:
+      - ${LICENSE_PATH}:C:\license
     networks:
       - mercurydemo
     environment:
-      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_LICENSE_LOCATION: C:\license\license.xml
       SITECORE_CONNECTIONSTRINGS_PROCESSING.ENGINE.STORAGE: Data Source=sql;Database=Sitecore.Processing.Engine.Storage;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_PROCESSING.ENGINE.TASKS: Data Source=sql;Database=Sitecore.Processing.Engine.Tasks;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_PROCESSING.WEBAPI.BLOB: http://xconnect
@@ -106,6 +114,8 @@ services:
     image: ${REGISTRY}${DEMO_IMAGE_PREFIX}-cm:${SITECORE_VERSION}-windowsservercore-${WINDOWSSERVERCORE_VERSION}-${BASE_IMAGE_VERSION}
     entrypoint: powershell.exe -Command "& C:\\tools\\entrypoints\\iis\\Development.ps1 -WatchDirectoryParameters @{ Path = 'C:\\src'; Destination = 'C:\\inetpub\\wwwroot'; }"
     mem_limit: 4GB
+    volumes:
+      - ${LICENSE_PATH}:C:\license
     ports:
       - "80:80"
     networks:
@@ -113,7 +123,7 @@ services:
         aliases:
           - ${SITECORE_HOST_NAME}
     environment:
-      SITECORE_LICENSE: ${SITECORE_LICENSE}
+      SITECORE_LICENSE_LOCATION: C:\license\license.xml
       SITECORE_APPSETTINGS_ROLE:DEFINE: Standalone
       SITECORE_CONNECTIONSTRINGS_CORE: Data Source=sql;Initial Catalog=Sitecore.Core;User ID=sa;Password=${SQL_SA_PASSWORD}
       SITECORE_CONNECTIONSTRINGS_SECURITY: Data Source=sql;Initial Catalog=Sitecore.Core;User ID=sa;Password=${SQL_SA_PASSWORD}
